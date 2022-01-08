@@ -14,9 +14,11 @@ const Banner: FunctionComponent<BannerProps> = ({ buttonText, handleClickOnButto
         <span className={styles.title2}>Discovery</span>
       </h1>
       <p className={styles.subTitle}>Discover your local coffee shop!</p>
-      <button className={styles.button} onClick={handleClickOnButton}>
-        {buttonText}
-      </button>
+      <div className={styles.buttonWrapper}>
+        <button className={styles.button} onClick={handleClickOnButton}>
+          {buttonText}
+        </button>
+      </div>
     </section>
   );
 };
