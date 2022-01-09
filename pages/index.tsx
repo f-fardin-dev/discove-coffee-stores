@@ -1,4 +1,4 @@
-import type { NextPage } from "next";
+import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Card from "../components/Card";
@@ -6,7 +6,15 @@ import Banner from "../components/Banner";
 import styles from "../styles/Home.module.css";
 import coffeeStores from "../data/coffee-store.json";
 
-const Home: NextPage = () => {
+export const getStaticProps = async () => {
+  return {
+    props: {
+      coffeeStores,
+    },
+  };
+};
+
+const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffeeStores }) => {
   const handleClickOnBannerButton = () => console.log("clicked");
 
   return (
