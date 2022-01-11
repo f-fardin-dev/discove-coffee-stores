@@ -1,15 +1,15 @@
-import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
+import type { InferGetStaticPropsType, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Card from "../components/Card";
 import Banner from "../components/Banner";
 import styles from "../styles/Home.module.css";
-import coffeeStores from "../data/coffee-store.json";
+import coffeeStoresData from "../data/coffee-store.json";
 
 export const getStaticProps = async () => {
   return {
     props: {
-      coffeeStores,
+      coffeeStores: coffeeStoresData,
     },
   };
 };
