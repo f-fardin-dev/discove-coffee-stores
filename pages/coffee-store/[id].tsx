@@ -23,8 +23,9 @@ export const getStaticProps: GetStaticProps<ICoffeStore> = async context => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = coffeeStoresData.map(store => ({ params: { id: store.id.toString() } }));
   return {
-    paths: [{ params: { id: "0" } }, { params: { id: "1" } }],
+    paths,
     fallback: true,
   };
 };
