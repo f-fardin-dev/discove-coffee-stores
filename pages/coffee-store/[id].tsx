@@ -1,4 +1,5 @@
 import { InferGetStaticPropsType, GetStaticPaths, NextPage, GetStaticProps } from "next";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
@@ -40,7 +41,9 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   }
   return (
     <div>
-      <h4>Coffee store {router.query.id}</h4>
+      <Head>
+        <title>{coffeeStore.name}</title>{" "}
+      </Head>
       <Link href="/">
         <a>Back to Home</a>
       </Link>
