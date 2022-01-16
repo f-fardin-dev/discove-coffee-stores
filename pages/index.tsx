@@ -4,12 +4,13 @@ import Image from "next/image";
 import Card from "../components/Card";
 import Banner from "../components/Banner";
 import styles from "../styles/Home.module.css";
-import coffeeStoresData from "../data/coffee-store.json";
+import { fetchCoffeeStores } from "../lib/coffee-stores";
 
 export const getStaticProps = async () => {
+  const coffeeStores = await fetchCoffeeStores();
   return {
     props: {
-      coffeeStores: coffeeStoresData,
+      coffeeStores,
     },
   };
 };
@@ -36,10 +37,10 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffee
             <div className={styles.cardLayout}>
               {coffeeStores.map(coffeeStore => (
                 <Card
-                  key={coffeeStore.id}
+                  key={coffeeStore.fsq_id}
                   name={coffeeStore.name}
-                  imgUrl={coffeeStore.imgUrl}
-                  href={`/coffee-store/${coffeeStore.id}`}
+                  imgUrl="https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                  href={`/coffee-store/${coffeeStore.fsq_id}`}
                 />
               ))}
             </div>
