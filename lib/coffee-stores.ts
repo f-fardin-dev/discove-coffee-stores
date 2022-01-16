@@ -1,8 +1,13 @@
-interface CoffeStores {
-  results: {
-    fsq_id: number;
-    name: string;
-  }[];
+export interface CoffeeStore {
+  fsq_id: number;
+  name: string;
+  location: {
+    address: string;
+    neighborhood?: string[];
+  };
+}
+interface CoffeeStores {
+  results: CoffeeStore[];
 }
 
 const getCoffeeStoresUrl = (latlng: string, query: string, limit?: number) => {
@@ -20,6 +25,6 @@ export const fetchCoffeeStores = async () => {
   };
 
   const response = await fetch(url, options);
-  const data: CoffeStores = await response.json();
+  const data: CoffeeStores = await response.json();
   return data.results;
 };

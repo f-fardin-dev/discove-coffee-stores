@@ -7,25 +7,28 @@ import { ParsedUrlQuery } from "querystring";
 import coffeeStoresData from "../../data/coffee-store.json";
 import cls from "classnames";
 import styles from "../../styles/coffee-store.module.css";
+import { CoffeeStore, fetchCoffeeStores } from "../../lib/coffee-stores";
 interface IParams extends ParsedUrlQuery {
   id: string;
 }
 
-interface ICoffeStore {
-  coffeeStore?: typeof coffeeStoresData[0];
+interface ICoffeeStore {
+  coffeeStore?: CoffeeStore;
 }
 
-export const getStaticProps: GetStaticProps<ICoffeStore> = async context => {
+export const getStaticProps: GetStaticProps<ICoffeeStore> = async context => {
   const { id } = context.params as IParams;
+  const coffeeStores = await fetchCoffeeStores();
   return {
     props: {
-      coffeeStore: coffeeStoresData.find(coffeeStore => coffeeStore.id.toString() === id),
+      coffeeStore: coffeeStores.find(coffeeStore => coffeeStore.fsq_id.toString() === id),
     },
   };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = coffeeStoresData.map(store => ({ params: { id: store.id.toString() } }));
+  const coffeeStores = await fetchCoffeeStores();
+  const paths = coffeeStores.map(store => ({ params: { id: store.fsq_id.toString() } }));
   return {
     paths,
     fallback: true,
@@ -57,16 +60,24 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           <div className={styles.nameWrapper}>
             <h1 className={styles.name}>{coffeeStore.name}</h1>
           </div>
-          <Image src={coffeeStore.imgUrl} alt={coffeeStore.name} width={600} height={360} className={styles.storeImg} />
+          <Image
+            src={
+              "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+            }
+            alt={coffeeStore.name}
+            width={600}
+            height={360}
+            className={styles.storeImg}
+          />
         </div>
         <div className={cls("glass", styles.col2)}>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/places.svg" alt="" width={24} height={24} />
-            <p className={styles.text}>{coffeeStore.address}</p>
+            <p className={styles.text}>{coffeeStore.location.address}</p>
           </div>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/nearMe.svg" alt="" width={24} height={24} />
-            <p className={styles.text}>{coffeeStore.neighbourhood}</p>
+            <p className={styles.text}>{coffeeStore.location.neighborhood || "N/A"}</p>
           </div>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/star.svg" alt="" width={24} height={24} />
