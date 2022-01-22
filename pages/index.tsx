@@ -1,12 +1,12 @@
 import type { InferGetStaticPropsType, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import Card from "../components/Card";
 import Banner from "../components/Banner";
 import styles from "../styles/Home.module.css";
-import { fetchCoffeeStores } from "../lib/coffee-stores";
+import { CoffeeStore, fetchCoffeeStores } from "../lib/coffee-stores";
 import useTrackLocation from "../hooks/useTrackLocation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { CoffeeStoreList } from "../components/CoffeeStoreList";
 
 export const getStaticProps = async () => {
   const coffeeStores = await fetchCoffeeStores();
@@ -18,6 +18,8 @@ export const getStaticProps = async () => {
 };
 
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffeeStores }) => {
+  const [nearCoffeeStores, setNearCoffeeStores] = useState<CoffeeStore[]>([]);
+  const [nearCoffeeStoresError, setNearCoffeeStoresError] = useState<null | string>(null);
   const { handleTrackLocation, latlng, isFindingLocation, locationErrorMsg } = useTrackLocation();
   const handleClickOnBannerButton = () => {
     handleTrackLocation();
@@ -30,9 +32,11 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffee
     const getNerabyStores = async () => {
       try {
         const coffeeStoresNearby = await fetchCoffeeStores(latlng, 20);
-        console.log({ coffeeStoresNearby });
+        setNearCoffeeStores(coffeeStoresNearby);
       } catch (error) {
+        const { message } = error as { message: string };
         console.log("Error in get nearby stores", error);
+        setNearCoffeeStoresError(message);
       }
     };
     getNerabyStores();
@@ -52,27 +56,12 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffee
           handleClickOnButton={handleClickOnBannerButton}
         />
         {locationErrorMsg && <p> Somthing went wrong: {locationErrorMsg}</p>}
+        {nearCoffeeStoresError && <p> Somthing went wrong: {nearCoffeeStoresError}</p>}
         <div className={styles.heroImage}>
           <Image src="/static/hero-image.png" alt="hero-image" width={700} height={400} />
         </div>
-        {coffeeStores.length > 0 && (
-          <div className={styles.sectionWrapper}>
-            <h2 className={styles.heading2}>Toronto Stores</h2>
-            <div className={styles.cardLayout}>
-              {coffeeStores.map(coffeeStore => (
-                <Card
-                  key={coffeeStore.fsq_id}
-                  name={coffeeStore.name}
-                  imgUrl={
-                    coffeeStore.imgUrl ||
-                    "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
-                  }
-                  href={`/coffee-store/${coffeeStore.fsq_id}`}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        <CoffeeStoreList title="Stores near me" stores={nearCoffeeStores} />
+        <CoffeeStoreList title="Toronto Stores" stores={coffeeStores} />
       </main>
     </div>
   );
