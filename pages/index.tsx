@@ -6,6 +6,7 @@ import Banner from "../components/Banner";
 import styles from "../styles/Home.module.css";
 import { fetchCoffeeStores } from "../lib/coffee-stores";
 import useTrackLocation from "../hooks/useTrackLocation";
+import { useEffect } from "react";
 
 export const getStaticProps = async () => {
   const coffeeStores = await fetchCoffeeStores();
@@ -21,6 +22,21 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffee
   const handleClickOnBannerButton = () => {
     handleTrackLocation();
   };
+
+  useEffect(() => {
+    if (!latlng) {
+      return;
+    }
+    const getNerabyStores = async () => {
+      try {
+        const coffeeStoresNearby = await fetchCoffeeStores(latlng, 20);
+        console.log({ coffeeStoresNearby });
+      } catch (error) {
+        console.log("Error in get nearby stores", error);
+      }
+    };
+    getNerabyStores();
+  }, [latlng]);
 
   return (
     <div className={styles.container}>
