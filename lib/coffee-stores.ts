@@ -14,12 +14,13 @@ interface CoffeeStores {
 }
 
 const unsplashApi = createApi({
-  accessKey: process.env.UNSPLASH_ACCESS_KEY || "",
+  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY || "",
 });
 
 const getCoffeeStoresUrl = (latlng: string, query: string, limit?: number) => {
   return `https://api.foursquare.com/v3/places/nearby?ll=${latlng}&query=${query}&limit=${limit || 7}`;
 };
+
 const getCoffeeStoresPhotos = async () => {
   const photos = await unsplashApi.search.getPhotos({
     query: "coffee shop",
@@ -29,13 +30,13 @@ const getCoffeeStoresPhotos = async () => {
   return results?.map(res => res.urls["small"]);
 };
 
-export const fetchCoffeeStores = async () => {
-  const url = getCoffeeStoresUrl("43.65267,-79.39545", "coffee store");
+export const fetchCoffeeStores = async (latlng?: string, limit?: number) => {
+  const url = getCoffeeStoresUrl(latlng || "43.65267,-79.39545", "coffee store", limit);
   const options = {
     method: "GET",
     headers: {
       Accept: "application/json",
-      Authorization: process.env.FOURSQUARE_API_KEY || "",
+      Authorization: process.env.NEXT_PUBLIC_FOURSQUARE_API_KEY || "",
     },
   };
   const photos = await getCoffeeStoresPhotos();
