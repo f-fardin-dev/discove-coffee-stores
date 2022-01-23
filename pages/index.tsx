@@ -3,10 +3,11 @@ import Head from "next/head";
 import Image from "next/image";
 import Banner from "../components/Banner";
 import styles from "../styles/Home.module.css";
-import { CoffeeStore, fetchCoffeeStores } from "../lib/coffee-stores";
+import { fetchCoffeeStores } from "../lib/coffee-stores";
 import useTrackLocation from "../hooks/useTrackLocation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CoffeeStoreList } from "../components/CoffeeStoreList";
+import { Actions, StoreContext } from "../context/StoreContext";
 
 export const getStaticProps = async () => {
   const coffeeStores = await fetchCoffeeStores();
@@ -18,21 +19,23 @@ export const getStaticProps = async () => {
 };
 
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffeeStores }) => {
-  const [nearCoffeeStores, setNearCoffeeStores] = useState<CoffeeStore[]>([]);
   const [nearCoffeeStoresError, setNearCoffeeStoresError] = useState<null | string>(null);
-  const { handleTrackLocation, latlng, isFindingLocation, locationErrorMsg } = useTrackLocation();
+  const { handleTrackLocation, isFindingLocation, locationErrorMsg } = useTrackLocation();
+
+  const { state, dispatch } = useContext(StoreContext);
+
   const handleClickOnBannerButton = () => {
     handleTrackLocation();
   };
 
   useEffect(() => {
-    if (!latlng) {
+    if (!state.latlng) {
       return;
     }
     const getNerabyStores = async () => {
       try {
-        const coffeeStoresNearby = await fetchCoffeeStores(latlng, 20);
-        setNearCoffeeStores(coffeeStoresNearby);
+        const coffeeStoresNearby = await fetchCoffeeStores(state.latlng, 20);
+        dispatch({ type: Actions.SET_NEARBY_STORES, payload: coffeeStoresNearby });
       } catch (error) {
         const { message } = error as { message: string };
         console.log("Error in get nearby stores", error);
@@ -40,7 +43,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffee
       }
     };
     getNerabyStores();
-  }, [latlng]);
+  }, [dispatch, state.latlng]);
 
   return (
     <div className={styles.container}>
@@ -60,7 +63,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffee
         <div className={styles.heroImage}>
           <Image src="/static/hero-image.png" alt="hero-image" width={700} height={400} />
         </div>
-        <CoffeeStoreList title="Stores near me" stores={nearCoffeeStores} />
+        <CoffeeStoreList title="Stores near me" stores={state.nearbyStores} />
         <CoffeeStoreList title="Toronto Stores" stores={coffeeStores} />
       </main>
     </div>
