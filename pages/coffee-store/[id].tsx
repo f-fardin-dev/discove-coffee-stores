@@ -4,16 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
-import coffeeStoresData from "../../data/coffee-store.json";
 import cls from "classnames";
 import styles from "../../styles/coffee-store.module.css";
-import { CoffeeStore, defaultCoffeeStore, defaultCoffeeStoreImage, fetchCoffeeStores } from "../../lib/coffee-stores";
+import { CoffeeStore, defaultCoffeeStoreImage, fetchCoffeeStores } from "../../lib/coffee-stores";
+import { useContext, useEffect, useState } from "react";
+import { StoreContext } from "../../context/StoreContext";
 interface IParams extends ParsedUrlQuery {
   id: string;
 }
 
 interface ICoffeeStore {
-  coffeeStore?: CoffeeStore;
+  coffeeStore: CoffeeStore | null;
 }
 
 export const getStaticProps: GetStaticProps<ICoffeeStore> = async context => {
@@ -22,7 +23,7 @@ export const getStaticProps: GetStaticProps<ICoffeeStore> = async context => {
   const findCoffeeStoresById = coffeeStores.find(coffeeStore => coffeeStore.fsq_id.toString() === id);
   return {
     props: {
-      coffeeStore: findCoffeeStoresById || defaultCoffeeStore,
+      coffeeStore: findCoffeeStoresById || null,
     },
   };
 };
@@ -39,17 +40,39 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffeeStore }) => {
   const router = useRouter();
 
+  const id = router.query.id;
+  const [store, setStore] = useState(coffeeStore);
+  const {
+    state: { nearbyStores },
+  } = useContext(StoreContext);
+
   const handleUpvote = () => console.log;
+
+  useEffect(() => {
+    if (coffeeStore) {
+      return;
+    }
+    const coffeeStoreFromContext = nearbyStores.find(coffeeStore => {
+      return coffeeStore.fsq_id.toString() === id;
+    });
+
+    if (coffeeStoreFromContext) {
+      setStore(coffeeStoreFromContext);
+    }
+  }, [coffeeStore, id, nearbyStores]);
+
   if (router.isFallback) {
     return <div>Loading ...</div>;
   }
-  if (!coffeeStore) {
+  if (!store) {
     return <div>Nothing found for this route</div>;
   }
+
+  const { name, imgUrl, location } = store;
   return (
     <div className={styles.layout}>
       <Head>
-        <title>{coffeeStore.name}</title>{" "}
+        <title>{name}</title>{" "}
       </Head>
       <div className={styles.container}>
         <div className={styles.col1}>
@@ -59,11 +82,11 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             </Link>
           </div>
           <div className={styles.nameWrapper}>
-            <h1 className={styles.name}>{coffeeStore.name}</h1>
+            <h1 className={styles.name}>{name}</h1>
           </div>
           <Image
-            src={coffeeStore.imgUrl || defaultCoffeeStoreImage}
-            alt={coffeeStore.name}
+            src={imgUrl || defaultCoffeeStoreImage}
+            alt={name}
             width={600}
             height={360}
             className={styles.storeImg}
@@ -72,11 +95,11 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         <div className={cls("glass", styles.col2)}>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/places.svg" alt="" width={24} height={24} />
-            <p className={styles.text}>{coffeeStore.location.address}</p>
+            <p className={styles.text}>{location.address || "N/A"}</p>
           </div>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/nearMe.svg" alt="" width={24} height={24} />
-            <p className={styles.text}>{coffeeStore.location.neighborhood || "N/A"}</p>
+            <p className={styles.text}>{location.neighborhood || "N/A"}</p>
           </div>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/star.svg" alt="" width={24} height={24} />

@@ -13,15 +13,6 @@ export interface CoffeeStore {
 export const defaultCoffeeStoreImage =
   "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80";
 
-export const defaultCoffeeStore: CoffeeStore = {
-  fsq_id: 0,
-  name: "N/A",
-  imgUrl: defaultCoffeeStoreImage,
-  location: {
-    address: "N/A",
-    neighborhood: ["N/A"],
-  },
-};
 interface CoffeeStores {
   results: CoffeeStore[];
 }
