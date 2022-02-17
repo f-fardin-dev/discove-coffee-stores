@@ -34,8 +34,10 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffee
     }
     const getNerabyStores = async () => {
       try {
-        const coffeeStoresNearby = await fetchCoffeeStores(state.latlng, 20);
+        const response = await fetch(`/api/getCoffeeStoresByLocation?latlng=${state.latlng}&limit=20`);
+        const coffeeStoresNearby = await response.json();
         dispatch({ type: Actions.SET_NEARBY_STORES, payload: coffeeStoresNearby });
+        setNearCoffeeStoresError("");
       } catch (error) {
         const { message } = error as { message: string };
         console.log("Error in get nearby stores", error);
