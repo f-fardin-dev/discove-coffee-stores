@@ -65,14 +65,14 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     return <div>Loading ...</div>;
   }
   if (!store) {
-    return <div>Nothing found for this route</div>;
+    return <div>Nothing found for this route/id</div>;
   }
 
   const { name, imgUrl, location } = store;
   return (
     <div className={styles.layout}>
       <Head>
-        <title>{name}</title>{" "}
+        <title>{name}</title>
       </Head>
       <div className={styles.container}>
         <div className={styles.col1}>
