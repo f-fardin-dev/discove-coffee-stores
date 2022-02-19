@@ -1,32 +1,39 @@
-import Airtable from "airtable";
 import { NextApiRequest, NextApiResponse } from "next";
-
-const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_KEY || "");
-
-const table = base("coffee-stores");
-
-console.log({ table });
+import { airTable, getMinifiedRecords } from "../../lib/airtable";
 
 const createCoffeeStore = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST") {
-    return res.json({ message: "method is not correct" });
+    return res.status(405).json({ message: "method is not correct" });
   }
+  const { id, name } = req.body;
 
+  if (!id) {
+    return res.status(400).json({ message: "id is required" });
+  }
   try {
-    const findCoffeeStoreRecord = await table
+    const findCoffeeStoreRecord = await airTable
       .select({
-        filterByFormula: `id="0"`,
+        filterByFormula: `id=${id}`,
       })
       .firstPage();
 
     if (findCoffeeStoreRecord.length !== 0) {
-      const records = findCoffeeStoreRecord.map(record => record.fields);
+      const records = getMinifiedRecords(findCoffeeStoreRecord);
       res.json(records);
     } else {
-      res.json({ message: "create a record" });
+      if (!name) {
+        return res.status(400).json({ message: "name is required" });
+      }
+      const createdRecord = await airTable.create([
+        {
+          fields: { ...req.body },
+        },
+      ]);
+      const records = getMinifiedRecords(createdRecord);
+      res.json(records);
     }
   } catch (error) {
-    console.log("Error create store", error);
+    console.error("Error create store", error);
     res.status(500).json({ message: "Error create store", error });
   }
 };
