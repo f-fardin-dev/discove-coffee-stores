@@ -7,3 +7,13 @@ export const airTable = base("coffee-stores");
 export const getMinifiedRecords = (records: Records<FieldSet>) => {
   return records.map(record => record.fields);
 };
+
+export const findRecordByFilter = async (id: number) => {
+  const findRecord = await airTable
+    .select({
+      filterByFormula: `id="${id}"`,
+    })
+    .firstPage();
+
+  return findRecord.length !== 0 ? getMinifiedRecords(findRecord) : null;
+};
