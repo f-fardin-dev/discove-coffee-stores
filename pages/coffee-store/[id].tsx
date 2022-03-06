@@ -48,6 +48,33 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   const handleUpvote = () => console.log;
 
+  const handleCreateCoffeStore = async (coffeStore: CoffeeStore) => {
+    const {
+      fsq_id: id,
+      name,
+      imgUrl,
+      location: { address, neighborhood },
+    } = coffeStore;
+    try {
+      const res = await fetch("/api/createCoffeeStore", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          name,
+          imgUrl,
+          voting: 0,
+          address: address || "",
+          neighborhood: neighborhood ? neighborhood[0] : "",
+        }),
+      });
+    } catch (error) {
+      console.error("Error creating coffee store", error);
+    }
+  };
+
   useEffect(() => {
     if (coffeeStore) {
       return;
@@ -58,6 +85,7 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
     if (coffeeStoreFromContext) {
       setStore(coffeeStoreFromContext);
+      handleCreateCoffeStore(coffeeStoreFromContext);
     }
   }, [coffeeStore, id, nearbyStores]);
 

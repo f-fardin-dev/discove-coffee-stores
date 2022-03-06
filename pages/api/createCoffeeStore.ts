@@ -13,7 +13,7 @@ const createCoffeeStore = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const findCoffeeStoreRecord = await airTable
       .select({
-        filterByFormula: `id=${id}`,
+        filterByFormula: `id="${id}"`,
       })
       .firstPage();
 
