@@ -40,7 +40,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffee
         setNearCoffeeStoresError("");
       } catch (error) {
         const { message } = error as { message: string };
-        console.log("Error in get nearby stores", error);
+        console.error("Error in get nearby stores", error);
         setNearCoffeeStoresError(message);
       }
     };
