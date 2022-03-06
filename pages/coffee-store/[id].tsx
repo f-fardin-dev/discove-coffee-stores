@@ -42,11 +42,12 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   const id = router.query.id;
   const [store, setStore] = useState(coffeeStore);
+  const [voatingCount, setVoatingCount] = useState(0);
   const {
     state: { nearbyStores },
   } = useContext(StoreContext);
 
-  const handleUpvote = () => console.log;
+  const handleUpvote = () => setVoatingCount(prevState => prevState + 1);
 
   const handleCreateCoffeStore = async (coffeStore: CoffeeStore) => {
     const {
@@ -132,7 +133,7 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           </div>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/star.svg" alt="" width={24} height={24} />
-            <p className={styles.text}>1</p>
+            <p className={styles.text}>{voatingCount}</p>
           </div>
           <button className={styles.upvoteButton} onClick={handleUpvote}>
             Up Vote!
