@@ -77,6 +77,7 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   useEffect(() => {
     if (coffeeStore) {
+      handleCreateCoffeStore(coffeeStore);
       return;
     }
     const coffeeStoreFromContext = nearbyStores.find(coffeeStore => {
