@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { airTable, getMinifiedRecords } from "../../lib/airtable";
+import { airTable, findRecordByFilter, getMinifiedRecords } from "../../lib/airtable";
 
 const createCoffeeStore = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST") {
@@ -11,14 +11,9 @@ const createCoffeeStore = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ message: "id is required" });
   }
   try {
-    const findCoffeeStoreRecord = await airTable
-      .select({
-        filterByFormula: `id="${id}"`,
-      })
-      .firstPage();
+    const records = await findRecordByFilter(Number(id));
 
-    if (findCoffeeStoreRecord.length !== 0) {
-      const records = getMinifiedRecords(findCoffeeStoreRecord);
+    if (records && records.length !== 0) {
       res.json(records);
     } else {
       if (!name) {
