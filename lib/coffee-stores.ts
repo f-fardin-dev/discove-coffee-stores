@@ -4,6 +4,7 @@ export interface CoffeeStore {
   fsq_id: number;
   name: string;
   imgUrl?: string;
+  voting?: number;
   location: {
     address: string;
     neighborhood?: string[];

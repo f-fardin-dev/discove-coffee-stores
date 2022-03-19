@@ -9,6 +9,7 @@ import styles from "../../styles/coffee-store.module.css";
 import { CoffeeStore, defaultCoffeeStoreImage, fetchCoffeeStores } from "../../lib/coffee-stores";
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
+import useSWR from "swr";
 interface IParams extends ParsedUrlQuery {
   id: string;
 }
@@ -36,18 +37,21 @@ export const getStaticPaths: GetStaticPaths = async () => {
     fallback: true,
   };
 };
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffeeStore }) => {
   const router = useRouter();
 
   const id = router.query.id;
-  const [store, setStore] = useState(coffeeStore);
-  const [voatingCount, setVoatingCount] = useState(0);
+  const [store, setStore] = useState<CoffeeStore | undefined | null>(coffeeStore);
+  const [votingCount, setVotingCount] = useState(0);
   const {
     state: { nearbyStores },
   } = useContext(StoreContext);
 
-  const handleUpvote = () => setVoatingCount(prevState => prevState + 1);
+  const handleUpvote = () => setVotingCount(prevState => prevState + 1);
+
+  const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher);
 
   const handleCreateCoffeStore = async (coffeStore: CoffeeStore) => {
     const {
@@ -77,6 +81,15 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   };
 
   useEffect(() => {
+    if (!data || !data.length) {
+      return;
+    }
+    const { id, name, address, imgUrl, neighborhood, voting } = data[0];
+    setStore({ fsq_id: id, name, imgUrl, location: { address, neighborhood: [neighborhood || "NA"] } });
+    setVotingCount(voting);
+  }, [data]);
+
+  useEffect(() => {
     if (coffeeStore) {
       handleCreateCoffeStore(coffeeStore);
       return;
@@ -94,8 +107,8 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   if (router.isFallback) {
     return <div>Loading ...</div>;
   }
-  if (!store) {
-    return <div>Nothing found for this route/id</div>;
+  if (!store || error) {
+    return <div>Something went wrong retrieving coffee store page</div>;
   }
 
   const { name, imgUrl, location } = store;
@@ -133,7 +146,7 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           </div>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/star.svg" alt="" width={24} height={24} />
-            <p className={styles.text}>{voatingCount}</p>
+            <p className={styles.text}>{votingCount}</p>
           </div>
           <button className={styles.upvoteButton} onClick={handleUpvote}>
             Up Vote!
