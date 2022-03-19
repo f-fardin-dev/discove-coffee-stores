@@ -8,7 +8,7 @@ export const getMinifiedRecords = (records: Records<FieldSet>) => {
   return records.map(record => record.fields);
 };
 
-export const findRecordByFilter = async (id: number) => {
+export const findRecordByFilter = async (id: number | string) => {
   const findRecord = await airTable
     .select({
       filterByFormula: `id="${id}"`,

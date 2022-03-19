@@ -11,8 +11,7 @@ const createCoffeeStore = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ message: "id is required" });
   }
   try {
-    const records = await findRecordByFilter(Number(id));
-
+    const records = await findRecordByFilter(id);
     if (records && records.length !== 0) {
       res.json(records);
     } else {
