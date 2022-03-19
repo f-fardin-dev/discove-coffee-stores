@@ -104,7 +104,7 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     }
   }, [coffeeStore, id, nearbyStores]);
 
-  if (router.isFallback) {
+  if (router.isFallback || (!store && !error && !data)) {
     return <div>Loading ...</div>;
   }
   if (!store || error) {
