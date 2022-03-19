@@ -2,13 +2,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { findRecordByFilter } from "../../lib/airtable";
 
-const getCoffeeStoresByLocation = async (req: NextApiRequest, res: NextApiResponse) => {
+const getCoffeeStoreById = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { id } = req.query;
     if (!id) {
       return res.status(400).json({ message: "id is required" });
     }
-    const records = await findRecordByFilter(Number(id));
+    const records = await findRecordByFilter(id as string);
 
     if (records && records.length !== 0) {
       res.json(records);
@@ -19,4 +19,4 @@ const getCoffeeStoresByLocation = async (req: NextApiRequest, res: NextApiRespon
   }
 };
 
-export default getCoffeeStoresByLocation;
+export default getCoffeeStoreById;
