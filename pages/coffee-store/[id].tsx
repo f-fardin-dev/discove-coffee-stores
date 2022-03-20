@@ -10,6 +10,7 @@ import { CoffeeStore, defaultCoffeeStoreImage, fetchCoffeeStores } from "../../l
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import useSWR from "swr";
+import { api } from "../../lib/api";
 interface IParams extends ParsedUrlQuery {
   id: string;
 }
@@ -49,7 +50,22 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     state: { nearbyStores },
   } = useContext(StoreContext);
 
-  const handleUpvote = () => setVotingCount(prevState => prevState + 1);
+  const handleUpvote = async () => {
+    try {
+      const res = await api<CoffeeStore[]>("/api/votingCoffeeStore", {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (res && res.length > 0) {
+        setVotingCount(prevState => prevState + 1);
+      }
+    } catch (error) {
+      console.error("Error update voting coffee store", error);
+    }
+  };
 
   const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher);
 
@@ -61,7 +77,7 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       location: { address, neighborhood },
     } = coffeStore;
     try {
-      const res = await fetch("/api/createCoffeeStore", {
+      await fetch("/api/createCoffeeStore", {
         method: "POST",
         headers: {
           "content-type": "application/json",
