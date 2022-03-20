@@ -57,7 +57,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ coffee
 
       <main className={styles.main}>
         <Banner
-          buttonText={isFindingLocation ? "Locationg..." : "View stores nearby"}
+          buttonText={isFindingLocation ? "Locating..." : "View stores nearby"}
           handleClickOnButton={handleClickOnBannerButton}
         />
         {locationErrorMsg && <p> Somthing went wrong: {locationErrorMsg}</p>}
