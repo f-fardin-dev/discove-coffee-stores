@@ -25,10 +25,11 @@ const votingCoffeeStore = async (req: NextApiRequest, res: NextApiResponse) => {
       ]);
       if (updateRecord) {
         const records = getMinifiedRecords(updateRecord);
-        res.json(records);
+        return res.json(records);
       }
+      res.status(500).json({ message: "Something went wrong with updating table" });
     } else {
-      return res.status(404).json({ message: "id could not be found" });
+      res.status(404).json({ message: "id could not be found" });
     }
   } catch (error) {
     res.status(500).json({ message: "Something went wrong", error });

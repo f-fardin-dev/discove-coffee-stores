@@ -11,7 +11,7 @@ const getCoffeeStoreById = async (req: NextApiRequest, res: NextApiResponse) => 
     const records = await findRecordByFilter(id as string);
 
     if (records && records.length !== 0) {
-      res.json(records);
+      return res.json(records);
     }
     return res.status(404).json({ message: "id could not be found" });
   } catch (error) {
