@@ -153,15 +153,15 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         </div>
         <div className={cls("glass", styles.col2)}>
           <div className={styles.iconWrapper}>
-            <Image src="/static/icons/places.svg" alt="" width={24} height={24} />
+            <Image src="/static/icons/places.svg" alt="places icon" width={24} height={24} />
             <p className={styles.text}>{location.address || "N/A"}</p>
           </div>
           <div className={styles.iconWrapper}>
-            <Image src="/static/icons/nearMe.svg" alt="" width={24} height={24} />
+            <Image src="/static/icons/nearMe.svg" alt="near me icon" width={24} height={24} />
             <p className={styles.text}>{location.neighborhood || "N/A"}</p>
           </div>
           <div className={styles.iconWrapper}>
-            <Image src="/static/icons/star.svg" alt="" width={24} height={24} />
+            <Image src="/static/icons/star.svg" alt="star icon" width={24} height={24} />
             <p className={styles.text}>{votingCount}</p>
           </div>
           <button className={styles.upvoteButton} onClick={handleUpvote}>
